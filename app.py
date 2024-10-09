@@ -1,6 +1,11 @@
 import streamlit as st
 import pandas as pd
 
+st.set_page_config(
+        page_title='東中野 麻雀部',
+        page_icon="🀄️"                  
+        )
+
 st.title('東中野 Mリーグ')
 st.image("top.jpg")
 st.header("順位表 ")
