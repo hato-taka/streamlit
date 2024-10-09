@@ -3,9 +3,8 @@ import pandas as pd
 
 st.title('東中野 Mリーグ')
 st.image("top.jpg")
-st.write('東中野麻雀部の結果発表')
-
-st.header("順位表 (10月7日更新)")
+st.header("順位表 ")
+st.write('(10月7日更新)')
 
 data = {
     '雀士名': ['コペ', 'せいか', 'ゆたか', 'しゅん', 'ぐっさん', 'あーちゃん', 'おーはし', 'なおき', 'こじ'],
