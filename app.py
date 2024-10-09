@@ -23,7 +23,7 @@ st.dataframe(df)
 
 st.image("graph.jpg")
 
-st.header("順位表の説明")
+st.markdown("### 順位表の説明")
 text = """
 平均点による順位  
 4戦以上の参加者が順位表掲載  
