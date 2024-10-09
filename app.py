@@ -1,5 +1,5 @@
 import streamlit as st
-
+import pandas as pd
 
 st.title('東中野 Mリーグ')
 st.image("top.jpg")
