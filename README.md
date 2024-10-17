@@ -1,5 +1,6 @@
-東中野 Mリーグ
 
+東中野 Mリーグ  
+https://app-qdqpwdwhq75ebbviasc2fx.streamlit.app/
 
 # streamlit
 アプリの起動
