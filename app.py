@@ -1,10 +1,46 @@
 import streamlit as st
 import pandas as pd
 
+
+### supabaseの記述
+from dotenv import load_dotenv
+import os
+from supabase import create_client, Client
+
+# .env ファイルの内容を環境変数にロード
+load_dotenv()
+
+url: str = os.environ.get("SUPABASE_URL")
+key: str = os.environ.get("SUPABASE_KEY")
+supabase: Client = create_client(url, key)
+
+
+def response():
+    return supabase.table("mahjong").select("*").execute()
+
+test2 =  {
+    "name": "TEST2",
+    "avg_score": 2,
+    "avg_rank": 3,
+    "date": "2024-10-02"
+}
+
+def insert(): 
+    return supabase.table("mahjong").insert(test2).execute()
+
+
 st.set_page_config(
         page_title='東中野 麻雀部',
         page_icon="🀄️"                  
         )
+
+if st.button('データ取得'):
+    st.write(response().data)
+    st.write(response().data[0]['name'])
+
+if st.button('データ挿入'):
+    insert()
+    st.write('データ挿入完了')
 
 st.title('東中野 Mリーグ')
 st.image("top.jpg")
@@ -17,11 +53,20 @@ data = {
     '平均得点': [8.30, 4.14, 2.26, 1.74, 1.01, -1.55, -1.69, -15.03, -15.52, -30.33]
 }
 
+data2 = {
+
+}
+
+
 df = pd.DataFrame(data, index=['1位','2位','3位', '4位', '5位', '6位', '7位', '8位', '-', '-'])
 
 st.dataframe(df)
 
 st.image("graph.jpg")
+
+st.title("役満達成者")
+
+
 
 st.markdown("### 順位表の説明")
 text = """
