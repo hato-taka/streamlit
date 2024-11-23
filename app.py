@@ -22,8 +22,8 @@ supabase: Client = create_client(url, key)
 
 
 # エラー時の記述を追加する
-# def response():
-#     return supabase.table("mahjong").select("*").execute()
+def response():
+    return supabase.table("mahjong").select("*").execute()
 
 # def insert(): 
 #     return supabase.table("mahjong").insert(test2).execute()
@@ -34,9 +34,9 @@ st.set_page_config(
         page_icon="🀄️"                  
         )
 
-# if st.button('データ取得'):
-#     st.write(response().data)
-#     st.write(response().data[0]['name'])
+if st.button('データ取得'):
+    st.write(response().data)
+    st.write(response().data[0]['name'])
 
 # if st.button('データ挿入'):
 #     insert()
