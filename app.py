@@ -10,8 +10,10 @@ from supabase import create_client, Client
 # .env ファイルの内容を環境変数にロード
 load_dotenv(override=True)
 
-url: str = os.getenv("SUPABASE_URL")
-key: str = os.getenv("SUPABASE_KEY")
+# url: str = os.getenv("SUPABASE_URL")
+url: str = st.secrets["SUPABASE_URL"]
+# key: str = os.getenv("SUPABASE_KEY")
+key: str = st.secrets["SUPABASE_KEY"]
 supabase: Client = create_client(url, key)
 
 
