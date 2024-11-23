@@ -8,13 +8,15 @@ import os
 from supabase import create_client, Client
 
 # .env ファイルの内容を環境変数にロード
-load_dotenv(override=True)
+# ローカル環境でのみ .env を読み込む
+if not st.secrets:
+    load_dotenv(override=True)
 
-# url: str = os.getenv("SUPABASE_URL")
-# key: str = os.getenv("SUPABASE_KEY")
+url: str = os.getenv("SUPABASE_URL")
+key: str = os.getenv("SUPABASE_KEY")
 # url: str = st.secrets["SUPABASE_URL"]
 # key: str = st.secrets["SUPABASE_KEY"]
-# supabase: Client = create_client(url, key)
+supabase: Client = create_client(url, key)
 # 暫定対応
 # supabase: Client = create_client("https://gljyxcfuckrjlwiwvovz.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdsanl4Y2Z1Y2tyamx3aXd2b3Z6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIzMTcwNjEsImV4cCI6MjA0Nzg5MzA2MX0.qb1gwwhaGXqwhy3kmVEwkX2p1Df1vx4b9gC1ZIlmJ3Y")
 

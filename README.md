@@ -2,6 +2,10 @@
 東中野 Mリーグ  
 https://app-qdqpwdwhq75ebbviasc2fx.streamlit.app/
 
+
+dev環境
+https://higashi-nakano-mahjong-club-dev.streamlit.app/
+
 # streamlit
 アプリの起動
 `streamlit run app.py`
