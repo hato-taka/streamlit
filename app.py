@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-
+from streamlit_carousel import carousel
 
 ### supabaseの記述
 from dotenv import load_dotenv
@@ -10,10 +10,10 @@ from supabase import create_client, Client
 # .env ファイルの内容を環境変数にロード
 load_dotenv(override=True)
 
-# url: str = os.getenv("SUPABASE_URL")
-url: str = st.secrets["SUPABASE_URL"]
-# key: str = os.getenv("SUPABASE_KEY")
-key: str = st.secrets["SUPABASE_KEY"]
+url: str = os.getenv("SUPABASE_URL")
+key: str = os.getenv("SUPABASE_KEY")
+# url: str = st.secrets["SUPABASE_URL"]
+# key: str = st.secrets["SUPABASE_KEY"]
 # supabase: Client = create_client(url, key)
 # 暫定対応
 supabase: Client = create_client("https://gljyxcfuckrjlwiwvovz.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdsanl4Y2Z1Y2tyamx3aXd2b3Z6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIzMTcwNjEsImV4cCI6MjA0Nzg5MzA2MX0.qb1gwwhaGXqwhy3kmVEwkX2p1Df1vx4b9gC1ZIlmJ3Y")
@@ -45,7 +45,7 @@ st.image("top.jpg")
 st.header("順位表 ")
 
 # データの最新更新日を取得する
-st.write('(10月17日更新)')
+st.write('(11月17日更新)')
 
 data = {
     '雀士名': ['コペ', 'せいか', 'しゅん', 'ゆたか', 'あーちゃん', 'おーはし', 'ぐっさん', 'なおき', 'みぞべ', 'こじ'],
@@ -63,7 +63,30 @@ st.image("graph.jpg")
 
 st.title("役満達成者")
 
-st.image("yakuman.jpg")
+# 役満達成者の画像のリスト
+images = [
+    dict(
+        title="",
+        text="",
+        img="yakuman01.jpg"
+    ),
+    dict(
+        title="",
+        text="",
+        img="yakuman02.jpg"
+    ),
+    dict(
+        title="",
+        text="",
+        img="yakuman03.jpg"
+    ),
+]
+
+# カルーセルを表示
+selected_item = carousel(items=images, container_height=500)
+
+
+# st.image("yakuman01.jpg")
 
 st.markdown("### 順位表の説明")
 
