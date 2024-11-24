@@ -22,5 +22,8 @@ st.text("text") # テキスト表示
 参照元: https://www.alpha.co.jp/blog/202304_02/
 
 
-仮想環境への入り方
+## 仮想環境への入り方
 `source venv/bin/activate`
+
+## パッケージの更新
+`pip freeze > requirements.txt`
