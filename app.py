@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
 from streamlit_carousel import carousel
+from streamlit_javascript import st_javascript
+from datetime import datetime
+import pytz
 
 ### supabaseの記述
 from dotenv import load_dotenv
@@ -24,6 +27,10 @@ supabase: Client = create_client(url, key)
 # エラー時の記述を追加する
 def get_all_data():
     return supabase.table("mahjong").select("*").execute()
+
+def get_last_date():
+    response = supabase.table("mahjong").select("created_at").order("created_at", desc=True).limit(1).execute()
+    return response.data[0]["created_at"]
 
 # def insert(): 
 #     return supabase.table("mahjong").insert(test2).execute()
@@ -65,15 +72,32 @@ if submit_button:
         st.warning("全ての項目を入力してください！")
 
 # データフレームに変換
-df = pd.DataFrame(get_all_data().data)
+row_data = get_all_data().data
+df_row_data = pd.DataFrame(row_data)
+formatted_data = df_row_data.drop(columns=["id"])
+df = pd.DataFrame(formatted_data)
 st.dataframe(df)  # Streamlitのデータフレーム表示
 
+# ISO形式の日時文字列
+utc_time_str = get_last_date()
+
+# ISO形式の文字列をUTCのdatetimeオブジェクトに変換
+utc_time = datetime.fromisoformat(utc_time_str)
+
+# UTCからJSTに変換
+jst_timezone = pytz.timezone("Asia/Tokyo")
+jst_time = utc_time.astimezone(jst_timezone)
+
+# JSTのdatetimeオブジェクトを日本の形式で文字列に変換
+jst_time_str = jst_time.strftime("%Y年%m月%d日 %H時")
+
 st.title('東中野 Mリーグ')
-st.image("top.jpg")
+st.image("top.jpg", use_container_width=True)
 st.header("順位表 ")
 
 # データの最新更新日を取得する
-st.write('(11月17日更新)')
+
+st.write(f"({jst_time_str}　更新)")
 
 data = {
     '雀士名': ['コペ', 'せいか', 'しゅん', 'ゆたか', 'あーちゃん', 'おーはし', 'ぐっさん', 'なおき', 'みぞべ', 'こじ'],
@@ -81,8 +105,64 @@ data = {
     '平均得点': [8.30, 4.14, 2.26, 1.74, 1.01, -1.55, -1.69, -15.03, -15.52, -30.33]
 }
 
-
 df = pd.DataFrame(data, index=['1位','2位','3位', '4位', '5位', '6位', '7位', '8位', '-', '-'])
+
+# テスト用
+import numpy as np
+import plotly.graph_objects as go
+import time
+
+st.title("Plotlyで折れ線グラフのアニメーション")
+
+# ボタンを作成
+start_animation = st.button("アニメーションを開始")
+
+# ボタンが押された場合の処理
+if start_animation:
+    # 初期データ
+    x_data = []
+    y1_data = []
+    y2_data = []
+
+    # PlotlyのFigureを作成
+    fig = go.Figure()
+
+    # Sin(x)とCos(x)のトレースを追加
+    fig.add_trace(go.Scatter(x=x_data, y=y1_data, mode='lines', name='sin(x)'))
+    fig.add_trace(go.Scatter(x=x_data, y=y2_data, mode='lines', name='cos(x)'))
+    # 凡例の位置を変更
+    fig.update_layout(
+        legend=dict(
+            x=0.5,  # 横方向の位置 (0: 左端, 1: 右端)
+            y=-0.3,    # 縦方向の位置 (0: 下端, 1: 上端)
+            xanchor='center',  # 横方向のアンカー (center, left, right)
+            yanchor='top'      # 縦方向のアンカー (top, middle, bottom)
+        )
+    )
+
+    # グラフ用のコンテナ
+    chart_placeholder = st.plotly_chart(fig, use_container_width=True)
+
+    # アニメーションループ
+    for i in range(1, 101):
+        # 新しいデータポイントを計算
+        new_x = i / 10
+        x_data.append(new_x)
+        y1_data.append(np.sin(new_x))
+        y2_data.append(np.cos(new_x))
+        
+        # データを更新
+        fig.data[0].x = x_data
+        fig.data[0].y = y1_data
+        fig.data[1].x = x_data
+        fig.data[1].y = y2_data
+
+        # グラフを更新
+        chart_placeholder.plotly_chart(fig, use_container_width=True)
+
+        # アニメーション速度を調整
+        time.sleep(0.1)
+
 
 # st.dataframe(df)
 st.image("rank.jpg")
@@ -110,11 +190,23 @@ images = [
     ),
 ]
 
-# カルーセルを表示
-selected_item = carousel(items=images, container_height=500)
+# JavaScriptを使って画面幅を取得
+screen_width = st_javascript("window.outerWidth")
 
+# 画面幅が取得できなかった場合のデフォルト値
+if screen_width is None:
+    screen_width = 1024  # PC表示のデフォルト
 
-# st.image("yakuman01.jpg")
+# デバイスに基づく表示切り替え
+if screen_width > 768:  # 幅が768pxより大きければPCと判断
+    # カルーセルを表示
+    selected_item = carousel(items=images, container_height=500)
+else:  # 幅が768px以下ならSPと判断
+    # SP用
+    st.image("yakuman01.jpg")
+    st.image("yakuman02.jpg")
+    st.image("yakuman03.jpg")
+
 
 st.markdown("### 順位表の説明")
 
