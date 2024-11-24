@@ -22,7 +22,7 @@ supabase: Client = create_client(url, key)
 
 
 # エラー時の記述を追加する
-def response():
+def get_all_data():
     return supabase.table("mahjong").select("*").execute()
 
 # def insert(): 
@@ -35,12 +35,38 @@ st.set_page_config(
         )
 
 if st.button('データ取得'):
-    st.write(response().data)
-    st.write(response().data[0]['name'])
+    st.write(get_all_data().data)
 
 # if st.button('データ挿入'):
 #     insert()
 #     st.write('データ挿入完了')
+
+# 入力フォーム
+with st.form(key="input_form"):
+    name = st.text_input("名前を入力してください")
+    rank = st.number_input("順位を入力してください", min_value=1, max_value=4, step=1)
+    score = st.number_input("スコアを入力してください", min_value=0, step=1)
+    submit_button = st.form_submit_button(label="送信")
+    
+# データをSupabaseに挿入
+if submit_button:
+    if name and score and rank is not None:
+        data = {"name": name, "rank": rank, "score": score}
+        response = supabase.table("mahjong").insert(data).execute()
+
+        # ステータスコードをチェック
+        if response:  # 201は作成成功のステータスコード
+            st.success("データが正常に追加されました！")
+            st.write("追加されたデータ:")
+            st.json(response.data)
+        else:
+            st.error(f"データの追加に失敗しました: {response.json()}")
+    else:
+        st.warning("全ての項目を入力してください！")
+
+# データフレームに変換
+df = pd.DataFrame(get_all_data().data)
+st.dataframe(df)  # Streamlitのデータフレーム表示
 
 st.title('東中野 Mリーグ')
 st.image("top.jpg")
