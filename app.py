@@ -32,31 +32,7 @@ def get_last_date():
     response = supabase.table("mahjong").select("created_at").order("created_at", desc=True).limit(1).execute()
     return response.data[0]["created_at"]
 
-# def insert(): 
-#     return supabase.table("mahjong").insert(test2).execute()
-
-
-st.set_page_config(
-        page_title='東中野 麻雀部',
-        page_icon="🀄️"                  
-        )
-
-if st.button('データ取得'):
-    st.write(get_all_data().data)
-
-# if st.button('データ挿入'):
-#     insert()
-#     st.write('データ挿入完了')
-
-# 入力フォーム
-with st.form(key="input_form"):
-    name = st.text_input("名前を入力してください")
-    rank = st.number_input("順位を入力してください", min_value=1, max_value=4, step=1)
-    score = st.number_input("スコアを入力してください", min_value=0, step=1)
-    submit_button = st.form_submit_button(label="送信")
-    
-# データをSupabaseに挿入
-if submit_button:
+def insert(): 
     if name and score and rank is not None:
         data = {"name": name, "rank": rank, "score": score}
         response = supabase.table("mahjong").insert(data).execute()
@@ -70,6 +46,26 @@ if submit_button:
             st.error(f"データの追加に失敗しました: {response.json()}")
     else:
         st.warning("全ての項目を入力してください！")
+
+st.set_page_config(
+        page_title='東中野 麻雀部',
+        page_icon="🀄️"                  
+        )
+
+if st.button('データ取得'):
+    st.write(get_all_data().data)
+
+# 入力フォーム
+with st.form(key="input_form"):
+    name = st.text_input("名前を入力してください")
+    rank = st.number_input("順位を入力してください", min_value=1, max_value=4, step=1)
+    score = st.number_input("スコアを入力してください", min_value=0, step=1)
+    submit_button = st.form_submit_button(label="送信")
+    
+# データをSupabaseに挿入
+if submit_button:
+    insert()
+    st.write('データ挿入完了')
 
 # データフレームに変換
 row_data = get_all_data().data
@@ -91,6 +87,85 @@ jst_time = utc_time.astimezone(jst_timezone)
 # JSTのdatetimeオブジェクトを日本の形式で文字列に変換
 jst_time_str = jst_time.strftime("%Y年%m月%d日 %H時")
 
+st.title("麻雀スコア計算フォーム")
+
+# 説明文
+st.markdown("25000点持ち、30000点返しです。半角数字で入力してください。")
+
+# 順位ごとのスコア入力
+st.subheader("スコア入力")
+
+
+rank_1_name = st.text_input("1位の名前", key="rank_1_name")
+# st.text_input("1位：自動で計算されます", key="rank_1", value="自動で計算されます", disabled=True)
+rank_1 = st.number_input("1位：", min_value=0, max_value=100000, step=1000, key="rank_1", value=10000)
+
+rank_2_name = st.text_input("2位の名前", key="rank_2_name")
+rank_2 = st.number_input("2位：", min_value=0, max_value=100000, step=1000, key="rank_2", value=10000)
+
+rank_3_name = st.text_input("3位の名前", key="rank_3_name")
+rank_3 = st.number_input("3位：", min_value=0, max_value=100000, step=1000, key="rank_3", value=10000)
+
+rank_4_name = st.text_input("4位の名前", key="rank_4_name")
+rank_4 = st.number_input("4位：", min_value=-100000, max_value=100000, step=1000, key="rank_4", value=1000)
+
+# # ウマ選択
+# st.subheader("ウマ")
+# uma_options = ["10-20（標準）", "20-40", "30-60"]
+# uma = st.selectbox("ウマを選択してください", options=uma_options, key="uma")
+
+# # レート選択
+# st.subheader("レート")
+# rate_options = ["50円（テンゴ）", "100円（テンピ）", "500円"]
+# rate = st.selectbox("レートを選択してください", options=rate_options, key="rate")
+
+# Session State の初期化
+if "calc_button" not in st.session_state:
+    st.session_state.calc_button = False
+    
+if "submit_button" not in st.session_state:
+    st.session_state.submit_button = False
+
+# 計算ボタン
+if st.button("計算する"):
+    st.session_state.calc_button = True
+    
+if st.session_state.calc_button:
+    # データをまとめる
+    ranks = ['1位', '2位', '3位', '4位']
+    names = [rank_1_name, rank_2_name, rank_3_name, rank_4_name]
+    scores = [rank_1, rank_2, rank_3, rank_4]
+    # データフレームの作成
+    df = pd.DataFrame({'雀士名': names, '得点': scores}, index=ranks)
+    # 確認用テーブルの表示
+    st.write("以下の点数で間違いないですか？")
+    st.table(df)
+    submit_button = st.button("送信する")
+    if submit_button:
+        st.session_state.submit_button = True
+        
+if st.session_state.submit_button:
+    submit_data = [
+        {"name": rank_1_name, "rank": 1, "score": rank_1},
+        {"name": rank_2_name, "rank": 2, "score": rank_2},
+        {"name": rank_3_name, "rank": 3, "score": rank_3},
+        {"name": rank_4_name, "rank": 4, "score": rank_4},
+        ]
+    response = supabase.table("mahjong").insert(submit_data).execute()
+    if response: 
+        st.success("データが正常に追加されました！")
+        st.write("追加されたデータ:")
+        st.json(response.data)
+    else:
+        st.error(f"データの追加に失敗しました: {response.json()}")
+        
+# Session State の初期化
+if "first_button_clicked" not in st.session_state:
+    st.session_state.first_button_clicked = False
+
+if "second_button_clicked" not in st.session_state:
+    st.session_state.second_button_clicked = False
+
 st.title('東中野 Mリーグ')
 st.image("top.jpg", use_container_width=True)
 st.header("順位表 ")
@@ -106,13 +181,16 @@ data = {
 }
 
 df = pd.DataFrame(data, index=['1位','2位','3位', '4位', '5位', '6位', '7位', '8位', '-', '-'])
+# 小数点第2位までフォーマットを適用
+styled_df = df.style.format({"平均順位": "{:.2f}", "平均得点": "{:.2f}"})
+st.table(styled_df)
 
 # テスト用
 import numpy as np
 import plotly.graph_objects as go
 import time
 
-st.title("Plotlyで折れ線グラフのアニメーション")
+# st.title("Plotlyで折れ線グラフのアニメーション")
 
 # ボタンを作成
 start_animation = st.button("アニメーションを開始")
