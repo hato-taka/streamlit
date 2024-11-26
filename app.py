@@ -4,6 +4,7 @@ from streamlit_carousel import carousel
 from streamlit_javascript import st_javascript
 from datetime import datetime
 import pytz
+from dateutil.parser import isoparse
 
 ### supabaseの記述
 from dotenv import load_dotenv
@@ -32,7 +33,7 @@ def get_last_date():
     response = supabase.table("mahjong").select("created_at").order("created_at", desc=True).limit(1).execute()
     return response.data[0]["created_at"]
 
-def insert(): 
+def insert(name, score, rank): 
     if name and score and rank is not None:
         data = {"name": name, "rank": rank, "score": score}
         response = supabase.table("mahjong").insert(data).execute()
@@ -52,33 +53,17 @@ st.set_page_config(
         page_icon="🀄️"                  
         )
 
-if st.button('データ取得'):
-    st.write(get_all_data().data)
 
-# 入力フォーム
-with st.form(key="input_form"):
-    name = st.text_input("名前を入力してください")
-    rank = st.number_input("順位を入力してください", min_value=1, max_value=4, step=1)
-    score = st.number_input("スコアを入力してください", min_value=0, step=1)
-    submit_button = st.form_submit_button(label="送信")
-    
-# データをSupabaseに挿入
-if submit_button:
-    insert()
-    st.write('データ挿入完了')
-
-# データフレームに変換
-row_data = get_all_data().data
-df_row_data = pd.DataFrame(row_data)
-formatted_data = df_row_data.drop(columns=["id"])
-df = pd.DataFrame(formatted_data)
-st.dataframe(df)  # Streamlitのデータフレーム表示
+def show_table():
+    # データフレームに変換
+    row_data = get_all_data().data
+    df_row_data = pd.DataFrame(row_data)
+    formatted_data = df_row_data.drop(columns=["id"])
+    df = pd.DataFrame(formatted_data)
+    st.dataframe(df)  # Streamlitのデータフレーム表示
 
 # ISO形式の日時文字列
-utc_time_str = get_last_date()
-
-# ISO形式の文字列をUTCのdatetimeオブジェクトに変換
-utc_time = datetime.fromisoformat(utc_time_str)
+utc_time = isoparse(get_last_date())
 
 # UTCからJSTに変換
 jst_timezone = pytz.timezone("Asia/Tokyo")
@@ -87,6 +72,11 @@ jst_time = utc_time.astimezone(jst_timezone)
 # JSTのdatetimeオブジェクトを日本の形式で文字列に変換
 jst_time_str = jst_time.strftime("%Y年%m月%d日 %H時")
 
+# タイトル部分
+st.title('東中野 Mリーグ')
+st.image("top.jpg", use_container_width=True)
+
+# 点数計算のフォーム
 st.title("麻雀スコア計算フォーム")
 
 # 説明文
@@ -166,12 +156,9 @@ if "first_button_clicked" not in st.session_state:
 if "second_button_clicked" not in st.session_state:
     st.session_state.second_button_clicked = False
 
-st.title('東中野 Mリーグ')
-st.image("top.jpg", use_container_width=True)
 st.header("順位表 ")
 
 # データの最新更新日を取得する
-
 st.write(f"({jst_time_str}　更新)")
 
 data = {
@@ -183,63 +170,7 @@ data = {
 df = pd.DataFrame(data, index=['1位','2位','3位', '4位', '5位', '6位', '7位', '8位', '-', '-'])
 # 小数点第2位までフォーマットを適用
 styled_df = df.style.format({"平均順位": "{:.2f}", "平均得点": "{:.2f}"})
-st.table(styled_df)
-
-# テスト用
-import numpy as np
-import plotly.graph_objects as go
-import time
-
-# st.title("Plotlyで折れ線グラフのアニメーション")
-
-# ボタンを作成
-start_animation = st.button("アニメーションを開始")
-
-# ボタンが押された場合の処理
-if start_animation:
-    # 初期データ
-    x_data = []
-    y1_data = []
-    y2_data = []
-
-    # PlotlyのFigureを作成
-    fig = go.Figure()
-
-    # Sin(x)とCos(x)のトレースを追加
-    fig.add_trace(go.Scatter(x=x_data, y=y1_data, mode='lines', name='sin(x)'))
-    fig.add_trace(go.Scatter(x=x_data, y=y2_data, mode='lines', name='cos(x)'))
-    # 凡例の位置を変更
-    fig.update_layout(
-        legend=dict(
-            x=0.5,  # 横方向の位置 (0: 左端, 1: 右端)
-            y=-0.3,    # 縦方向の位置 (0: 下端, 1: 上端)
-            xanchor='center',  # 横方向のアンカー (center, left, right)
-            yanchor='top'      # 縦方向のアンカー (top, middle, bottom)
-        )
-    )
-
-    # グラフ用のコンテナ
-    chart_placeholder = st.plotly_chart(fig, use_container_width=True)
-
-    # アニメーションループ
-    for i in range(1, 101):
-        # 新しいデータポイントを計算
-        new_x = i / 10
-        x_data.append(new_x)
-        y1_data.append(np.sin(new_x))
-        y2_data.append(np.cos(new_x))
-        
-        # データを更新
-        fig.data[0].x = x_data
-        fig.data[0].y = y1_data
-        fig.data[1].x = x_data
-        fig.data[1].y = y2_data
-
-        # グラフを更新
-        chart_placeholder.plotly_chart(fig, use_container_width=True)
-
-        # アニメーション速度を調整
-        time.sleep(0.1)
+# st.table(styled_df)
 
 
 # st.dataframe(df)
