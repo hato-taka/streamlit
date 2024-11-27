@@ -242,7 +242,9 @@ html ="""
 st.html(html)
 
 import matplotlib.pyplot as plt
-import japanize_matplotlib
+# japanize_matplotlib は非推奨扱い
+# import japanize_matplotlib
+import matplotlib_fontja
 
 # 仮のデータ
 data = {
