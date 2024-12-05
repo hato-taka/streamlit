@@ -268,7 +268,7 @@ st.title("平均点推移グラフ(途中)")
 # 折れ線グラフをプロット
 fig, ax = plt.subplots()
 for column in df.columns[1:]:
-    ax.plot(df["日付"], df[column], label=column)
+    ax.plot(df["日付"], df[column], 'o-', label=column)
 
 ax.set_title("平均点推移")
 ax.set_xlabel("日付")
