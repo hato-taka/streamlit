@@ -280,4 +280,4 @@ ax.grid()
 tick_interval = 3  # 表示する間隔（3つおきに表示）
 ax.set_xticks(df["日付"][::tick_interval])  # 間引いて表示
 
-st.pyplot(fig)
+# st.pyplot(fig)
