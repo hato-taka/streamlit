@@ -3,3 +3,4 @@
 config.toml
 venv
 secrets.toml
+__pycache__/

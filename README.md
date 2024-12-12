@@ -27,3 +27,46 @@ st.text("text") # テキスト表示
 
 ## パッケージの更新
 `pip freeze > requirements.txt`
+
+# テーブル設計
+
+```mermaid
+erDiagram
+    mahjong {
+        int id PK "Primary Key"
+        varchar name "Player Name"
+        int rank "Rank of the player"
+        int score "Player's score"
+        datetime created_at "Timestamp of game"
+    }
+```
+
+# `toml`ファイルの使い方
+
+```config.toml
+# コメント行（# または // を使える）
+title = "My Application" # シンプルなキーと値のペア
+
+[database]  # セクション
+host = "localhost"
+port = 5432
+user = "admin"
+password = "password"
+
+[api]  # 別のセクション
+key = "your_api_key"
+timeout = 30
+
+[features]
+enable_feature_x = true
+enable_feature_y = false
+
+# 配列
+numbers = [1, 2, 3, 4, 5]
+colors = ["red", "green", "blue"]
+
+# ネストされたテーブル
+[settings.logging]
+level = "debug"
+path = "/var/log/app.log"
+```
