@@ -25,18 +25,19 @@ st.markdown("25000点持ち、30000点返しです。半角数字で入力して
 st.subheader("スコア入力")
 
 
-rank_1_name = st.text_input("1位の名前", key="rank_1_name")
+rank_1_name = st.selectbox('1位の名前', get_names(), index=0)
+
 # st.text_input("1位：自動で計算されます", key="rank_1", value="自動で計算されます", disabled=True)
-rank_1 = st.number_input("1位：", min_value=0, max_value=100000, step=1000, key="rank_1", value=10000)
+rank_1 = st.number_input("1位：", min_value=0, max_value=100000, step=1000, key="rank_1", value=30000)
 
-rank_2_name = st.text_input("2位の名前", key="rank_2_name")
-rank_2 = st.number_input("2位：", min_value=0, max_value=100000, step=1000, key="rank_2", value=10000)
+rank_2_name = st.selectbox('2位の名前',get_names(), index=0)
+rank_2 = st.number_input("2位：", min_value=0, max_value=100000, step=1000, key="rank_2", value=20000)
 
-rank_3_name = st.text_input("3位の名前", key="rank_3_name")
+rank_3_name = st.selectbox('3位の名前',get_names(), index=0)
 rank_3 = st.number_input("3位：", min_value=0, max_value=100000, step=1000, key="rank_3", value=10000)
 
-rank_4_name = st.text_input("4位の名前", key="rank_4_name")
-rank_4 = st.number_input("4位：", min_value=-100000, max_value=100000, step=1000, key="rank_4", value=1000)
+rank_4_name = st.selectbox('4位の名前',get_names(), index=0)
+rank_4 = st.number_input("4位：", min_value=-100000, max_value=100000, step=1000, key="rank_4", value=0)
 
 # # レート選択
 st.subheader("レート")
@@ -91,7 +92,8 @@ if "second_button_clicked" not in st.session_state:
 
 st.header("順位表")
 
-
+st.write("サンプル用の表")
+show_average_scores()
 
 # データの最新更新日を取得する
 st.write(f"({get_last_date()}　更新)")
