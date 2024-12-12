@@ -28,6 +28,19 @@ st.text("text") # テキスト表示
 ## パッケージの更新
 `pip freeze > requirements.txt`
 
+# テーブル設計
+
+```mermaid
+erDiagram
+    mahjong {
+        int id PK "Primary Key"
+        varchar name "Player Name"
+        int rank "Rank of the player"
+        int score "Player's score"
+        datetime created_at "Timestamp of game"
+    }
+```
+
 # `toml`ファイルの使い方
 
 ```config.toml
