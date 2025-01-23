@@ -1,6 +1,6 @@
 
 東中野 Mリーグ  
-https://app-qdqpwdwhq75ebbviasc2fx.streamlit.app/
+https://higashi-nakano-mahjong-club.streamlit.app/
 
 
 dev環境
